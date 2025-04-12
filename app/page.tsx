@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <div className="min-h-screen flex flex-col">
       <Header title="Varsity Scholars Consult" showAuth={true} />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-blue-500 to-indigo-600 py-20 text-white">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center">
@@ -48,7 +48,7 @@ export default function Home() {
           <h2 className="text-3xl font-bold mb-6">Ready to Start Your Academic Journey?</h2>
           <p className="text-xl mb-8 max-w-2xl mx-auto">Join thousands of students who have successfully enrolled through our admission portal.</p>
           <Link
-            href="/sign-up"
+            href="https://varsityscholarsconsult.com/"
             className="text-white bg-blue-600 hover:bg-blue-100 px-8 py-3 rounded-md font-medium inline-block transition-colors"
           >
             Find All Our Ongoing scholarship here
@@ -92,8 +92,78 @@ export default function Home() {
         </div>
       </section>
 
-      
-      
+      {/* Continents Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Study Opportunities Around the World</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {/* North America */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/north-america.jpg"
+                  alt="North America"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">North America</h3>
+                <p className="text-gray-600">Explore prestigious universities in the USA and Canada with world-class education systems and research opportunities.</p>
+              </div>
+            </div>
+
+            {/* Europe */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/europe.jpg"
+                  alt="Europe"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">Europe</h3>
+                <p className="text-gray-600">Discover historic universities in the UK, Germany, France and more with diverse cultural experiences and academic excellence.</p>
+              </div>
+            </div>
+
+            {/* Asia */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/asia.jpg"
+                  alt="Asia"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">Asia</h3>
+                <p className="text-gray-600">Experience rapidly growing educational hubs in China, Japan, Singapore and more with innovative programs and cultural immersion.</p>
+              </div>
+            </div>
+
+            {/* Australia */}
+            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="relative h-48">
+                <Image
+                  src="/australia.jpg"
+                  alt="Australia"
+                  fill
+                  style={{ objectFit: 'cover' }}
+                />
+              </div>
+              <div className="p-4">
+                <h3 className="text-xl font-semibold mb-2">Australia & Oceania</h3>
+                <p className="text-gray-600">Study in Australia and New Zealand with high-quality education, beautiful landscapes, and excellent quality of life.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
