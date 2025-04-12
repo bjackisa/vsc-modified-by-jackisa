@@ -1,8 +1,5 @@
 import { ReactNode } from 'react';
 import { cookies } from 'next/headers';
-import { db } from '@/lib/db';
-import { users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
 import Layout from './Layout';
 
 interface ServerLayoutProps {
@@ -12,9 +9,10 @@ interface ServerLayoutProps {
 
 export default async function ServerLayout({ children, title }: ServerLayoutProps) {
   // Check for admin session
-  const cookieStore = cookies();
-  const adminSessionId = cookieStore.get('admin-session')?.value;
-  const adminRole = cookieStore.get('admin-role')?.value;
+  // const cookieStore = cookies();
+  const adminSessionId = (await cookies()).get('admin-session')?.value;
+  const adminRole = (await cookies()).get('admin-role')?.value;
+  // const adminRole = cookieStore.get('admin-role')?.value;
 
   // If admin is logged in
   if (adminSessionId && adminRole) {
@@ -40,3 +38,4 @@ export default async function ServerLayout({ children, title }: ServerLayoutProp
     </Layout>
   );
 }
+

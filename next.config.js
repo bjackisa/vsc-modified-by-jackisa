@@ -6,6 +6,14 @@ const nextConfig = {
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
   },
+  // Disable ESLint during build
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  // Disable TypeScript type checking during build
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;

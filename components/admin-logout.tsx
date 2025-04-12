@@ -1,10 +1,10 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+// import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 
 export default function AdminLogout() {
-  const router = useRouter();
+  // const router = useRouter();
 
   const handleLogout = async () => {
     try {
