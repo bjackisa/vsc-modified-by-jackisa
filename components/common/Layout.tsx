@@ -22,18 +22,20 @@ export default function Layout({
 }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col">
-      <Header 
-        title={title} 
-        isAdmin={isAdmin} 
-        isStudent={isStudent} 
-        role={role} 
-        showAuth={showAuth} 
+      <Header
+        title={title}
+        isAdmin={isAdmin}
+        isStudent={isStudent}
+        role={role}
+        showAuth={showAuth}
       />
-      
-      <main className="flex-grow container mx-auto px-4 py-8">
-        {children}
+
+      <main className="flex-grow container mx-auto px-4 py-8 w-full max-w-full sm:px-6 lg:px-8">
+        <div className="w-full overflow-hidden">
+          {children}
+        </div>
       </main>
-      
+
       <Footer />
     </div>
   );
