@@ -1,0 +1,25 @@
+CREATE TABLE IF NOT EXISTS users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE NOT NULL,
+  name TEXT,
+  role TEXT DEFAULT 'student',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS applications (
+  id TEXT PRIMARY KEY,
+  user_id TEXT REFERENCES users(id),
+  status TEXT DEFAULT 'pending',
+  application_data JSONB,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS documents (
+  id TEXT PRIMARY KEY,
+  application_id TEXT REFERENCES applications(id),
+  name TEXT NOT NULL,
+  content BYTEA NOT NULL,
+  mime_type TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

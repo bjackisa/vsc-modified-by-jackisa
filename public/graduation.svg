@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="800px" height="600px" viewBox="0 0 800 600" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Graduation</title>
+    <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g transform="translate(100, 100)">
+            <!-- Graduation Cap -->
+            <polygon fill="#3B82F6" points="300 0 600 150 300 300 0 150"></polygon>
+            <rect fill="#1E40AF" x="280" y="300" width="40" height="150"></rect>
+            <rect fill="#1E40AF" x="200" y="450" width="200" height="20" rx="10"></rect>
+            
+            <!-- Tassel -->
+            <path d="M280,300 C280,300 250,350 260,400 C270,450 280,450 280,450" stroke="#FBBF24" stroke-width="8" stroke-linecap="round"></path>
+            <circle fill="#FBBF24" cx="260" cy="450" r="15"></circle>
+            
+            <!-- Diploma -->
+            <rect fill="#F9FAFB" x="450" y="200" width="100" height="150" rx="5"></rect>
+            <rect fill="#E5E7EB" x="450" y="200" width="100" height="20"></rect>
+            <rect fill="#E5E7EB" x="450" y="330" width="100" height="20"></rect>
+            <rect fill="#DC2626" x="440" y="190" width="10" height="170" rx="5"></rect>
+            <rect fill="#DC2626" x="550" y="190" width="10" height="170" rx="5"></rect>
+            <path d="M440,190 C440,190 450,180 500,180 C550,180 560,190 560,190" stroke="#DC2626" stroke-width="10" stroke-linecap="round"></path>
+            <path d="M440,360 C440,360 450,370 500,370 C550,370 560,360 560,360" stroke="#DC2626" stroke-width="10" stroke-linecap="round"></path>
+        </g>
+    </g>
+</svg>
