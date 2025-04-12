@@ -8,10 +8,6 @@ const nextConfig = {
   env: {
     DATABASE_URL: process.env.DATABASE_URL,
   },
-  // Increase serverless function timeout
-  serverRuntimeConfig: {
-    maxDuration: 60, // 60 seconds
-  },
 };
 
 module.exports = nextConfig;
