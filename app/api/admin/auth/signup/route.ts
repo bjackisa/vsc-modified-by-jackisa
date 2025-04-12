@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { users } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
@@ -11,9 +11,9 @@ export async function POST(request: Request) {
 
     // Validate input
     if (!email || !password || !name) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Email, password, and name are required' 
+      return NextResponse.json({
+        success: false,
+        message: 'Email, password, and name are required'
       }, { status: 400 });
     }
 
@@ -25,9 +25,9 @@ export async function POST(request: Request) {
       .limit(1);
 
     if (existingUser.length > 0) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'User with this email already exists' 
+      return NextResponse.json({
+        success: false,
+        message: 'User with this email already exists'
       }, { status: 409 });
     }
 
@@ -47,8 +47,8 @@ export async function POST(request: Request) {
     await db.insert(users).values(newUser);
 
     // Return success without the password
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Admin account created successfully',
       user: {
         id: newUser.id,
@@ -59,9 +59,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Admin signup error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      message: 'Internal server error' 
+    return NextResponse.json({
+      success: false,
+      message: 'Internal server error'
     }, { status: 500 });
   }
 }
