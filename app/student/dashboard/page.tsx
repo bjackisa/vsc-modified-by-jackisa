@@ -5,6 +5,7 @@ import { auth } from '@clerk/nextjs/server';
 import { redirect } from 'next/navigation';
 import { ApplicationFormData } from '@/app/api/applications/route';
 import DateDisplay from '@/app/admin/applications/date-display';
+import Link from 'next/link';
 
 // Define the type for application data from the database
 type Application = {
@@ -63,7 +64,17 @@ export default async function StudentDashboard() {
                     <p>Full Name: {app.application_data.fullName}</p>
                     <p>Email: {app.application_data.email}</p>
                     <p>Phone: {app.application_data.phoneNumber}</p>
-                    <p>Education: {app.application_data.education}</p>
+                    <p>Country: {app.application_data.country || 'N/A'}</p>
+                    <p>Applying For: {app.application_data.countryApplyingFor || 'N/A'}</p>
+                    <p>Funding Type: {app.application_data.fundingType || 'N/A'}</p>
+                  </div>
+                  <div className="mt-2 pt-2 border-t border-gray-200">
+                    <Link
+                      href={`/student/applications/${app.id}`}
+                      className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                    >
+                      View Complete Application
+                    </Link>
                   </div>
                 </div>
               )}

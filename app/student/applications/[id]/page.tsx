@@ -1,37 +1,31 @@
 import { db } from '@/lib/db';
-import { applications, documents, users } from '@/lib/schema';
+import { applications, documents } from '@/lib/schema';
 import { eq } from 'drizzle-orm';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import Link from 'next/link';
-import { requireAdmin } from '@/lib/admin-auth';
-import UpdateStatusForm from '../../applications/update-status-form';
-import PrintButton from '../../applications/print-button';
-import ExportButton from '../../applications/export-button';
-import DocumentDownload from '../../applications/document-download';
+import { auth } from '@clerk/nextjs/server';
+import DocumentDownload from '@/app/admin/applications/document-download';
+import DateDisplay from '@/app/admin/applications/date-display';
 
-export default async function ApplicationDetailPage({
+export default async function StudentApplicationDetailPage({
   params,
 }: {
   params: { id: string };
 }) {
-  // Ensure user is authenticated as admin
-  await requireAdmin();
+  // Ensure user is authenticated
+  const { userId } = await auth();
+  
+  if (!userId) {
+    redirect('/sign-in');
+  }
 
   const { id } = params;
 
-  // Get application with user and documents
+  // Get application with documents
   const applicationData = await db
-    .select({
-      id: applications.id,
-      status: applications.status,
-      application_data: applications.application_data,
-      user: users,
-      created_at: applications.created_at,
-      updated_at: applications.updated_at,
-    })
+    .select()
     .from(applications)
     .where(eq(applications.id, id))
-    .leftJoin(users, eq(applications.user_id, users.id))
     .limit(1);
 
   if (applicationData.length === 0) {
@@ -39,6 +33,11 @@ export default async function ApplicationDetailPage({
   }
 
   const application = applicationData[0];
+
+  // Verify that the application belongs to the current user
+  if (application.user_id !== userId) {
+    redirect('/student/dashboard');
+  }
 
   // Get documents for this application
   const applicationDocuments = await db
@@ -50,10 +49,10 @@ export default async function ApplicationDetailPage({
     <div className="max-w-4xl mx-auto">
       <div className="mb-6">
         <Link
-          href="/admin/applications"
+          href="/student/dashboard"
           className="text-blue-600 hover:text-blue-800 transition-colors"
         >
-          ← Back to Applications
+          ← Back to Dashboard
         </Link>
       </div>
 
@@ -63,10 +62,13 @@ export default async function ApplicationDetailPage({
             <h1 className="text-2xl font-bold">
               Application #{application.id.slice(0, 8)}
             </h1>
-            <UpdateStatusForm
-              applicationId={application.id}
-              currentStatus={application.status}
-            />
+            <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
+              application.status === 'approved' ? 'bg-green-100 text-green-800' : 
+              application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
+              'bg-yellow-100 text-yellow-800'
+            }`}>
+              {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+            </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -76,8 +78,8 @@ export default async function ApplicationDetailPage({
                 <p className="mb-2">
                   <span className="font-medium">Status:</span>{' '}
                   <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    application.status === 'approved' ? 'bg-green-100 text-green-800' :
-                    application.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                    application.status === 'approved' ? 'bg-green-100 text-green-800' : 
+                    application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
                     'bg-yellow-100 text-yellow-800'
                   }`}>
                     {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
@@ -85,29 +87,11 @@ export default async function ApplicationDetailPage({
                 </p>
                 <p className="mb-2">
                   <span className="font-medium">Submitted:</span>{' '}
-                  {application.created_at ? new Date(application.created_at).toISOString().split('T')[0] : 'N/A'}
+                  <DateDisplay date={application.created_at} />
                 </p>
                 <p className="mb-2">
                   <span className="font-medium">Last Updated:</span>{' '}
-                  {application.updated_at ? new Date(application.updated_at).toISOString().split('T')[0] : 'N/A'}
-                </p>
-              </div>
-            </div>
-
-            <div>
-              <h2 className="text-lg font-semibold mb-3">Applicant Information</h2>
-              <div className="bg-gray-50 p-4 rounded-md">
-                <p className="mb-2">
-                  <span className="font-medium">Name:</span>{' '}
-                  {application.user?.name || 'N/A'}
-                </p>
-                <p className="mb-2">
-                  <span className="font-medium">Email:</span>{' '}
-                  {application.user?.email || 'N/A'}
-                </p>
-                <p className="mb-2">
-                  <span className="font-medium">User ID:</span>{' '}
-                  {application.user?.id || 'N/A'}
+                  <DateDisplay date={application.updated_at} />
                 </p>
               </div>
             </div>
@@ -300,8 +284,21 @@ export default async function ApplicationDetailPage({
       </div>
 
       <div className="flex justify-between mb-10">
-        <PrintButton />
-        <ExportButton applicationId={application.id} />
+        <Link
+          href="/student/dashboard"
+          className="px-4 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-700 transition-colors"
+        >
+          Back to Dashboard
+        </Link>
+        
+        {application.status === 'pending' && (
+          <Link
+            href={`/student/apply/edit/${application.id}`}
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+          >
+            Edit Application
+          </Link>
+        )}
       </div>
     </div>
   );

@@ -16,11 +16,35 @@ export const applications = pgTable('applications', {
   user_id: text('user_id').notNull().references(() => users.id),
   status: text('status').default('pending').notNull().$type<'pending' | 'approved' | 'rejected'>(),
   application_data: jsonb('application_data').notNull().$type<{
+    // Personal Information
     fullName: string;
     email: string;
     phoneNumber: string;
     address: string;
-    education: string;
+    country: string;
+    stateProvince: string;
+    passportNumber: string;
+    dateOfBirth: string;
+
+    // Education Information
+    // SSCE Details
+    secondarySchoolGrade: string;
+    secondarySchoolName: string;
+
+    // Bachelor Degree Details (optional)
+    bachelorUniversityName?: string;
+    bachelorProgram?: string;
+    bachelorGrade?: string;
+
+    // Graduate/Master Details (optional)
+    graduateUniversityName?: string;
+    graduateProgram?: string;
+    graduateGrade?: string;
+
+    // Application Details
+    countryApplyingFor: string;
+    fundingType: string;
+    referralSource: string;
   }>(),
   created_at: timestamp('created_at', { mode: 'date' }).defaultNow().notNull(),
   updated_at: timestamp('updated_at', { mode: 'date' }).defaultNow().notNull(),

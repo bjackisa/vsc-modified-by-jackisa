@@ -7,11 +7,35 @@ import { eq } from 'drizzle-orm';
 
 // Validation schema for application data
 const applicationSchema = z.object({
+  // Personal Information
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
   address: z.string().min(1, "Address is required"),
-  education: z.string().min(1, "Education details are required"),
+  country: z.string().min(1, "Country is required"),
+  stateProvince: z.string().min(1, "State/Province is required"),
+  passportNumber: z.string().min(1, "Passport/ID number is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+
+  // Education Information
+  // SSCE Details
+  secondarySchoolGrade: z.string().min(1, "Secondary school grade is required"),
+  secondarySchoolName: z.string().min(1, "Secondary school name is required"),
+
+  // Bachelor Degree Details (optional)
+  bachelorUniversityName: z.string().optional(),
+  bachelorProgram: z.string().optional(),
+  bachelorGrade: z.string().optional(),
+
+  // Graduate/Master Details (optional)
+  graduateUniversityName: z.string().optional(),
+  graduateProgram: z.string().optional(),
+  graduateGrade: z.string().optional(),
+
+  // Application Details
+  countryApplyingFor: z.string().min(1, "Country applying for is required"),
+  fundingType: z.string().min(1, "Funding type is required"),
+  referralSource: z.string().min(1, "Referral source is required"),
 });
 
 export type ApplicationFormData = z.infer<typeof applicationSchema>;
