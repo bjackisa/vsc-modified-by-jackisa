@@ -25,9 +25,9 @@ export async function POST(request: Request) {
     );
 
     if (!isValidCredential) {
-      return NextResponse.json({ 
-        success: false, 
-        message: 'Invalid credentials' 
+      return NextResponse.json({
+        success: false,
+        message: 'Invalid credentials'
       }, { status: 401 });
     }
 
@@ -49,21 +49,21 @@ export async function POST(request: Request) {
       };
 
       await db.insert(users).values(newUser);
-      
+
       // Fetch the newly created user
       dbUser = await db
         .select()
         .from(users)
         .where(eq(users.email, email))
         .limit(1);
-    } 
+    }
     // If user exists but is not admin, update their role
     else if (dbUser[0].role !== 'admin' && dbUser[0].role !== 'super_admin') {
       await db
         .update(users)
         .set({ role: 'super_admin' })
         .where(eq(users.email, email));
-      
+
       // Refresh user data
       dbUser = await db
         .select()
@@ -74,13 +74,13 @@ export async function POST(request: Request) {
 
     // Create JWT token
     const token = sign(
-      { 
+      {
         id: dbUser[0].id,
         email: dbUser[0].email,
         role: dbUser[0].role,
         name: dbUser[0].name,
         authMethod: 'direct'
-      }, 
+      },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
@@ -95,8 +95,8 @@ export async function POST(request: Request) {
       sameSite: 'lax',
     });
 
-    return NextResponse.json({ 
-      success: true, 
+    return NextResponse.json({
+      success: true,
       message: 'Login successful',
       user: {
         id: dbUser[0].id,
@@ -107,9 +107,9 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     console.error('Admin login error:', error);
-    return NextResponse.json({ 
-      success: false, 
-      message: 'Internal server error' 
+    return NextResponse.json({
+      success: false,
+      message: 'Internal server error'
     }, { status: 500 });
   }
 }
@@ -118,34 +118,34 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const token = cookies().get('admin-token')?.value;
-    
+
     if (!token) {
-      return NextResponse.json({ 
-        authenticated: false, 
-        message: 'No token found' 
+      return NextResponse.json({
+        authenticated: false,
+        message: 'No token found'
       });
     }
 
     try {
-      const decoded = verify(token, JWT_SECRET) as any;
-      
+      const decoded = verify(token, JWT_SECRET) as { id: string };
+
       // Check if user still exists in database
       const dbUser = await db
         .select()
         .from(users)
         .where(eq(users.id, decoded.id))
         .limit(1);
-      
+
       if (dbUser.length === 0) {
         cookies().delete('admin-token');
-        return NextResponse.json({ 
-          authenticated: false, 
-          message: 'User not found in database' 
+        return NextResponse.json({
+          authenticated: false,
+          message: 'User not found in database'
         });
       }
 
-      return NextResponse.json({ 
-        authenticated: true, 
+      return NextResponse.json({
+        authenticated: true,
         user: {
           id: dbUser[0].id,
           email: dbUser[0].email,
@@ -153,18 +153,18 @@ export async function GET() {
           role: dbUser[0].role
         }
       });
-    } catch (verifyError) {
+    } catch (error) {
       cookies().delete('admin-token');
-      return NextResponse.json({ 
-        authenticated: false, 
-        message: 'Invalid token' 
+      return NextResponse.json({
+        authenticated: false,
+        message: 'Invalid token'
       });
     }
   } catch (error) {
     console.error('Error verifying admin token:', error);
-    return NextResponse.json({ 
-      authenticated: false, 
-      message: 'Internal server error' 
+    return NextResponse.json({
+      authenticated: false,
+      message: 'Internal server error'
     }, { status: 500 });
   }
 }
@@ -172,8 +172,8 @@ export async function GET() {
 // Logout
 export async function DELETE() {
   cookies().delete('admin-token');
-  return NextResponse.json({ 
-    success: true, 
-    message: 'Logged out successfully' 
+  return NextResponse.json({
+    success: true,
+    message: 'Logged out successfully'
   });
 }

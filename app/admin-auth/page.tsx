@@ -242,7 +242,7 @@ export default function AdminAuthPage() {
                   Back to Home
                 </Link>
               </div>
-              <div className="text-sm">
+              {/* <div className="text-sm">
                 <button
                   type="button"
                   onClick={() => setIsSignUp(true)}
@@ -250,7 +250,7 @@ export default function AdminAuthPage() {
                 >
                   Create new account
                 </button>
-              </div>
+              </div> */}
             </div>
           </form>
         )}

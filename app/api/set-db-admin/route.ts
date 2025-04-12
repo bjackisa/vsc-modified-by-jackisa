@@ -33,7 +33,7 @@ export async function GET() {
     let result;
     if (existingUser.length > 0) {
       // Update existing user
-      const updateData: any = { role: 'super_admin' };
+      const updateData: { role: string; id?: string } = { role: 'super_admin' };
 
       // If we have a Clerk ID and it's for the target email, use it
       if (userId && clerkEmail === targetEmail) {
@@ -48,7 +48,13 @@ export async function GET() {
       console.log('Updated user role in database:', result);
     } else {
       // Create new user with the Clerk user ID if available
-      const newUser: any = {
+      const newUser: {
+        id?: string;
+        email: string;
+        name: string;
+        role: string;
+        created_at: Date;
+      } = {
         email: targetEmail,
         name: 'Super Admin',
         role: 'super_admin',
