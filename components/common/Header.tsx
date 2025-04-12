@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { UserButton } from '@clerk/nextjs';
+import { UserButton } from '@clerk/nextjs/react';
 import { useState } from 'react';
 import AdminLogout from '@/components/admin-logout';
 

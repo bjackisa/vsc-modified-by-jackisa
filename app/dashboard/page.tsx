@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth, useUser } from '@clerk/nextjs';
+import { useAuth, useUser } from '@clerk/nextjs/react';
 
 export default function DashboardRedirect() {
   const router = useRouter();
