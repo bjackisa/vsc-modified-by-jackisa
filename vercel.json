@@ -1,11 +1,16 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "installCommand": "npm install"
-      }
+  "version": 2,
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
+  "framework": "nextjs",
+  "functions": {
+    "api/**/*": {
+      "memory": 1024,
+      "maxDuration": 60
     }
-  ]
+  },
+  "crons": [],
+  "github": {
+    "silent": true
+  }
 }
