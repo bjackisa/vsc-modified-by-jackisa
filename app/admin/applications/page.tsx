@@ -1,13 +1,27 @@
 import { db } from '@/lib/db';
-import { applications, documents, users } from '@/lib/schema';
-import { eq } from 'drizzle-orm';
+import { applications, users } from '@/lib/schema';
+import { eq, desc, ilike, or, sql } from 'drizzle-orm';
 import Link from 'next/link';
 import { requireAdmin } from '@/lib/admin-auth';
 import DateDisplay from './date-display';
+import SearchBar from './search-bar';
 
-export default async function AdminApplicationsPage() {
+interface PageProps {
+  searchParams: { q?: string };
+}
+
+export default async function AdminApplicationsPage({ searchParams }: PageProps) {
   // Ensure user is authenticated as admin
   await requireAdmin();
+
+  const { q } = searchParams;
+  
+  const query = q
+    ? or(
+        ilike(sql`${applications.application_data}->>'fullName'`, `%${q}%`),
+        ilike(sql`${applications.application_data}->>'email'`, `%${q}%`)
+      )
+    : undefined;
 
   const applicationData = await db
     .select({
@@ -20,11 +34,16 @@ export default async function AdminApplicationsPage() {
     })
     .from(applications)
     .leftJoin(users, eq(applications.user_id, users.id))
-    .orderBy(applications.created_at);
+    .where(query)
+    .orderBy(desc(applications.created_at));
 
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold mb-6">Applications Management</h1>
+
+      <div className="mb-6">
+        <SearchBar />
+      </div>
 
       <div className="bg-white shadow-md rounded-lg overflow-hidden">
         <div className="overflow-x-auto">

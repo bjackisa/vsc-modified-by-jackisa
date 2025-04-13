@@ -460,6 +460,7 @@ export default function ApplicationForm() {
                         <option value="Australia">Australia</option>
                         <option value="Germany">Germany</option>
                         <option value="France">France</option>
+                        <option value="India">India</option>
                         <option value="Other">Other</option>
                       </select>
                     </FormControl>
