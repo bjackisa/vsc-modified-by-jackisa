@@ -17,15 +17,15 @@ export async function GET(request: NextRequest) {
     }
 
     // Check authentication - either the application owner or an admin can view receipts
-    const { userId } = auth();
+    const session = await auth();
     const adminSession = await getAdminSession();
 
-    if (!userId && !adminSession) {
+    if (!session.userId && !adminSession) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // If not admin, verify that the payment belongs to the user's application
-    if (!adminSession && userId) {
+    if (!adminSession && session.userId) {
       try {
         const paymentData = await db
           .select({
@@ -37,7 +37,7 @@ export async function GET(request: NextRequest) {
           .leftJoin(applications, eq(payments.application_id, applications.id))
           .limit(1);
 
-        if (paymentData.length === 0 || paymentData[0].application.user_id !== userId) {
+        if (paymentData.length === 0 || !paymentData[0].application || paymentData[0].application.user_id !== session.userId) {
           return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
         }
       } catch (authError) {
@@ -71,9 +71,9 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     // Get the current user from Clerk
-    const { userId } = auth();
+    const session = await auth();
 
-    if (!userId) {
+    if (!session.userId) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -101,57 +101,45 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'Payment not found' }, { status: 404 });
       }
 
-      if (paymentData[0].application.user_id !== userId) {
+      if (!paymentData[0].application || paymentData[0].application.user_id !== session.userId) {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
       }
 
-      try {
-        // Upload file to Vercel Blob
-        const blob = await put(`payment-receipts/${paymentId}/${file.name}`, file, {
-          access: 'public',
-        });
+      // Upload file to Vercel Blob
+      const blob = await put(`receipts/${paymentId}/${file.name}`, file, {
+        access: 'public',
+      });
 
-        try {
-          // Store receipt in database
-          const receipt = await db.insert(payment_receipts).values({
-            payment_id: paymentId,
-            name: file.name,
-            blob_url: blob.url,
-            mime_type: file.type,
-            uploaded_by: userId,
-          }).returning();
+      // Create receipt record
+      const receipt = await db.insert(payment_receipts).values({
+        payment_id: paymentId,
+        blob_url: blob.url,
+        mime_type: file.type,
+        name: file.name,
+        uploaded_by: session.userId,
+      }).returning();
 
-          // Update payment status to pending if it was not_updated
-          const payment = paymentData[0].payment;
-          if (payment.status === 'not_updated') {
-            await db
-              .update(payments)
-              .set({
-                status: 'pending',
-                updated_at: new Date(),
-              })
-              .where(eq(payments.id, paymentId));
-          }
-
-          return NextResponse.json({
-            success: true,
-            message: 'Receipt uploaded successfully',
-            receipt: receipt[0],
-          });
-        } catch (dbError) {
-          console.error('[RECEIPT_DB_INSERT]', dbError);
-          return NextResponse.json({ success: false, error: 'Failed to save receipt to database' }, { status: 500 });
-        }
-      } catch (blobError) {
-        console.error('[RECEIPT_BLOB_UPLOAD]', blobError);
-        return NextResponse.json({ success: false, error: 'Failed to upload file' }, { status: 500 });
+      // Update payment status to pending if it was not_updated
+      if (paymentData[0].payment.status === 'not_updated') {
+        await db
+          .update(payments)
+          .set({
+            status: 'pending',
+            updated_at: new Date(),
+          })
+          .where(eq(payments.id, paymentId));
       }
-    } catch (authError) {
-      console.error('[RECEIPT_AUTH_CHECK]', authError);
-      return NextResponse.json({ success: false, error: 'Failed to verify payment ownership' }, { status: 500 });
+
+      return NextResponse.json({
+        success: true,
+        receipt: receipt[0]
+      });
+    } catch (error) {
+      console.error('[RECEIPTS_UPLOAD]', error);
+      return NextResponse.json({ success: false, error: 'Failed to upload receipt' }, { status: 500 });
     }
   } catch (error) {
-    console.error('[RECEIPT_UPLOAD]', error);
+    console.error('[RECEIPTS_POST]', error);
     return NextResponse.json({ success: false, error: 'Internal server error' }, { status: 500 });
   }
 }

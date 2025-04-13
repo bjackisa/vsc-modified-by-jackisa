@@ -16,22 +16,22 @@ export async function GET(request: NextRequest) {
     }
 
     // Check authentication - either the application owner or an admin can view payments
-    const { userId } = auth();
+    const session = await auth();
     const adminSession = await getAdminSession();
 
-    if (!userId && !adminSession) {
+    if (!session?.userId && !adminSession) {
       return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
     }
 
     // If not admin, verify that the application belongs to the user
-    if (!adminSession && userId) {
+    if (!adminSession && session?.userId) {
       const userApplication = await db
         .select()
         .from(applications)
         .where(eq(applications.id, applicationId))
         .limit(1);
 
-      if (userApplication.length === 0 || userApplication[0].user_id !== userId) {
+      if (userApplication.length === 0 || userApplication[0].user_id !== session.userId) {
         return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
       }
     }

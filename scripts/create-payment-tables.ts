@@ -4,65 +4,48 @@ import { drizzle } from 'drizzle-orm/neon-http';
 
 dotenv.config({ path: '.env.local' });
 
-async function main() {
-  console.log('Creating payment tables...');
-  
-  const sql = neon(process.env.DATABASE_URL!);
-  const db = drizzle(sql);
-  
+const sql = neon('postgresql://neondb_owner:npg_rK7TxODZ8IES@ep-broad-bar-a5om36nk-pooler.us-east-2.aws.neon.tech/neondb');
+
+async function createTables() {
   try {
-    // Create payments table
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "payments" (
-        "id" text PRIMARY KEY,
-        "application_id" text NOT NULL REFERENCES "applications" ("id") ON DELETE CASCADE,
-        "payment_type" text NOT NULL,
-        "status" text NOT NULL DEFAULT 'not_updated',
-        "amount" decimal(10, 2) DEFAULT 0,
-        "currency" text DEFAULT 'USD',
-        "account_details" text,
-        "notes" text,
-        "updated_by" text REFERENCES "users" ("id"),
-        "created_at" timestamp NOT NULL DEFAULT now(),
-        "updated_at" timestamp NOT NULL DEFAULT now()
-      )
-    `);
+    console.log('Creating payment tables...');
     
-    console.log('Created payments table');
+    // Create payments table
+    await sql`
+      CREATE TABLE IF NOT EXISTS payments (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+        application_id TEXT REFERENCES applications(id) ON DELETE CASCADE,
+        payment_type TEXT NOT NULL,
+        status TEXT DEFAULT 'not_updated' NOT NULL,
+        amount DECIMAL(10, 2) DEFAULT 0,
+        currency TEXT DEFAULT 'USD',
+        account_details TEXT,
+        notes TEXT,
+        updated_by TEXT REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `;
+    console.log('Payments table created');
     
     // Create payment_receipts table
-    await db.execute(sql`
-      CREATE TABLE IF NOT EXISTS "payment_receipts" (
-        "id" text PRIMARY KEY,
-        "payment_id" text NOT NULL REFERENCES "payments" ("id") ON DELETE CASCADE,
-        "blob_url" text NOT NULL,
-        "mime_type" text NOT NULL,
-        "name" text NOT NULL,
-        "uploaded_by" text REFERENCES "users" ("id"),
-        "created_at" timestamp NOT NULL DEFAULT now()
+    await sql`
+      CREATE TABLE IF NOT EXISTS payment_receipts (
+        id TEXT PRIMARY KEY DEFAULT gen_random_uuid(),
+        payment_id TEXT REFERENCES payments(id) ON DELETE CASCADE,
+        blob_url TEXT NOT NULL,
+        mime_type TEXT NOT NULL,
+        name TEXT NOT NULL,
+        uploaded_by TEXT REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       )
-    `);
+    `;
+    console.log('Payment receipts table created');
     
-    console.log('Created payment_receipts table');
-    
-    // Add indexes for faster queries
-    await db.execute(sql`
-      CREATE INDEX IF NOT EXISTS "payments_application_id_idx" ON "payments" ("application_id")
-    `);
-    
-    await db.execute(sql`
-      CREATE INDEX IF NOT EXISTS "payment_receipts_payment_id_idx" ON "payment_receipts" ("payment_id")
-    `);
-    
-    console.log('Created indexes');
-    
-    console.log('Payment tables created successfully!');
+    console.log('All tables created successfully!');
   } catch (error) {
-    console.error('Error creating payment tables:', error);
-    process.exit(1);
+    console.error('Error creating tables:', error);
   }
-  
-  process.exit(0);
 }
 
-main();
+createTables();

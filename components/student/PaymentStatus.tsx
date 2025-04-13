@@ -90,18 +90,23 @@ export default function PaymentStatus({ applicationId }: { applicationId: string
       setError(null);
 
       const response = await fetch(`/api/payments?applicationId=${applicationId}`, {
-        credentials: 'include',
-        cache: 'no-store'
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          setError('Please sign in to view payment information');
+          return;
+        }
         throw new Error('Failed to fetch payments');
       }
 
       const data = await response.json();
 
       if (data.success && data.payments) {
-        setPayments(data.payments.map((p: any) => ({
+        setPayments(data.payments.map((p: Payment) => ({
           ...p,
           amount: typeof p.amount === 'number' ? p.amount.toString() : p.amount
         })));
@@ -120,10 +125,16 @@ export default function PaymentStatus({ applicationId }: { applicationId: string
   const fetchReceipts = async (paymentId: string) => {
     try {
       const response = await fetch(`/api/payments/receipts?paymentId=${paymentId}`, {
-        credentials: 'include'
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
 
       if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Please sign in to view receipts');
+          return;
+        }
         throw new Error('Failed to fetch receipts');
       }
 
@@ -164,12 +175,23 @@ export default function PaymentStatus({ applicationId }: { applicationId: string
       const response = await fetch('/api/payments/receipts', {
         method: 'POST',
         body: formData,
-        credentials: 'include'
+        headers: {
+          // Don't set Content-Type for FormData
+          // It will be set automatically with the correct boundary
+        }
       });
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          toast.error('Please sign in to upload receipts');
+          return;
+        }
+        throw new Error('Failed to upload receipt');
+      }
 
       const data = await response.json();
 
-      if (response.ok && data.success) {
+      if (data.success) {
         toast.success('Receipt uploaded successfully');
         setSelectedFile(null);
 
