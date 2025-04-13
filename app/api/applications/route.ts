@@ -7,11 +7,35 @@ import { eq } from 'drizzle-orm';
 
 // Validation schema for application data
 const applicationSchema = z.object({
+  // Personal Information
   fullName: z.string().min(1, "Full name is required"),
   email: z.string().email("Invalid email address"),
   phoneNumber: z.string().min(10, "Phone number must be at least 10 digits"),
   address: z.string().min(1, "Address is required"),
-  education: z.string().min(1, "Education details are required"),
+  country: z.string().min(1, "Country is required"),
+  stateProvince: z.string().min(1, "State/Province is required"),
+  passportNumber: z.string().min(1, "Passport/ID number is required"),
+  dateOfBirth: z.string().min(1, "Date of birth is required"),
+
+  // Education Information
+  // SSCE Details
+  secondarySchoolGrade: z.string().min(1, "Secondary school grade is required"),
+  secondarySchoolName: z.string().min(1, "Secondary school name is required"),
+
+  // Bachelor Degree Details (optional)
+  bachelorUniversityName: z.string().optional(),
+  bachelorProgram: z.string().optional(),
+  bachelorGrade: z.string().optional(),
+
+  // Graduate/Master Details (optional)
+  graduateUniversityName: z.string().optional(),
+  graduateProgram: z.string().optional(),
+  graduateGrade: z.string().optional(),
+
+  // Application Details
+  countryApplyingFor: z.string().min(1, "Country applying for is required"),
+  fundingType: z.string().min(1, "Funding type is required"),
+  referralSource: z.string().min(1, "Referral source is required"),
 });
 
 export type ApplicationFormData = z.infer<typeof applicationSchema>;
@@ -37,8 +61,19 @@ export async function POST(request: Request) {
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.id, userId))
+      .where(eq(users.email, validatedData.data.email))
       .limit(1);
+
+    // If user exists with different ID, return error
+    if (existingUser.length > 0 && existingUser[0].id !== userId) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Email already registered with a different account',
+          details: 'Please use a different email or log in with the existing account'
+        }), 
+        { status: 409 }
+      );
+    }
 
     // If user doesn't exist, create them
     if (existingUser.length === 0) {
@@ -49,6 +84,23 @@ export async function POST(request: Request) {
         role: 'student',
         created_at: new Date(),
       });
+    }
+
+    // Check for existing application
+    const existingApplication = await db
+      .select()
+      .from(applications)
+      .where(eq(applications.user_id, userId))
+      .limit(1);
+
+    if (existingApplication.length > 0) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Application already exists',
+          details: 'You have already submitted an application'
+        }), 
+        { status: 409 }
+      );
     }
 
     const application = await db.insert(applications).values({
@@ -62,7 +114,22 @@ export async function POST(request: Request) {
     return NextResponse.json(application[0]);
   } catch (error) {
     console.error('[APPLICATIONS_POST]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    if (error instanceof Error) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Failed to submit application',
+          details: error.message 
+        }), 
+        { status: 500 }
+      );
+    }
+    return new NextResponse(
+      JSON.stringify({ 
+        error: 'Failed to submit application',
+        details: 'An unexpected error occurred' 
+      }), 
+      { status: 500 }
+    );
   }
 }
 

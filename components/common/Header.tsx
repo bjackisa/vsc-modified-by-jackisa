@@ -25,8 +25,8 @@ export default function Header({
   return (
     <header className="bg-white shadow-sm py-4">
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <div className="flex items-center gap-4">
-          <Link href="/" className="text-2xl font-bold text-gray-800">
+        <div className="flex items-center gap-2 sm:gap-4">
+          <Link href="/" className="text-xl sm:text-2xl font-bold text-gray-800 truncate max-w-[180px] sm:max-w-none">
             {title}
           </Link>
 
@@ -76,6 +76,14 @@ export default function Header({
                       Applications
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      href="/admin/payments"
+                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                    >
+                      Payments
+                    </Link>
+                  </li>
                   {role === 'super_admin' && (
                     <li>
                       <Link
@@ -107,6 +115,14 @@ export default function Header({
                       Apply
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      href="/student/payments"
+                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                    >
+                      Payments
+                    </Link>
+                  </li>
                 </>
               )}
             </ul>
@@ -114,18 +130,18 @@ export default function Header({
         </div>
 
         {/* Auth Buttons */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 sm:gap-4">
           {!isAdmin && !isStudent && showAuth && (
             <>
               <Link
                 href="/sign-in"
-                className="text-blue-600 hover:text-blue-800 transition-colors"
+                className="text-blue-600 hover:text-blue-800 transition-colors text-sm sm:text-base"
               >
                 Sign In
               </Link>
               <Link
                 href="/sign-up"
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 sm:px-4 sm:py-2 rounded-md transition-colors text-sm sm:text-base"
               >
                 Sign Up
               </Link>
@@ -133,48 +149,49 @@ export default function Header({
           )}
 
           {isAdmin && <AdminLogout />}
-          {isStudent && <UserButton afterSignOutUrl="/" />}
-        </div>
+          {isStudent && <UserButton />}
 
-        {/* Mobile menu button */}
-        <button
-          className="md:hidden"
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden ml-2"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            aria-label="Toggle menu"
           >
-            {isMobileMenuOpen ? (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            ) : (
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            )}
-          </svg>
-        </button>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              {isMobileMenuOpen ? (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              ) : (
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16M4 18h16"
+                />
+              )}
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Mobile Navigation */}
       {isMobileMenuOpen && (
-        <div className="md:hidden mt-4 px-4 pb-4">
+        <div className="md:hidden mt-4 px-4 pb-4 border-t border-gray-100 pt-4">
           <ul className="flex flex-col gap-4">
             <li>
               <Link
                 href="/"
-                className="text-gray-600 hover:text-blue-600 transition-colors block"
+                className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Home
@@ -183,7 +200,7 @@ export default function Header({
             <li>
               <Link
                 href="/about"
-                className="text-gray-600 hover:text-blue-600 transition-colors block"
+                className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 About
@@ -192,7 +209,7 @@ export default function Header({
             <li>
               <Link
                 href="/admin-auth"
-                className="text-gray-600 hover:text-blue-600 transition-colors block"
+                className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 Admin Portal
@@ -204,7 +221,7 @@ export default function Header({
                 <li>
                   <Link
                     href="/admin/dashboard"
-                    className="text-gray-600 hover:text-blue-600 transition-colors block"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
@@ -213,17 +230,26 @@ export default function Header({
                 <li>
                   <Link
                     href="/admin/applications"
-                    className="text-gray-600 hover:text-blue-600 transition-colors block"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Applications
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/admin/payments"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Payments
                   </Link>
                 </li>
                 {role === 'super_admin' && (
                   <li>
                     <Link
                       href="/admin/users"
-                      className="text-gray-600 hover:text-blue-600 transition-colors block"
+                      className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       Users
@@ -238,7 +264,7 @@ export default function Header({
                 <li>
                   <Link
                     href="/student/dashboard"
-                    className="text-gray-600 hover:text-blue-600 transition-colors block"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Dashboard
@@ -247,10 +273,19 @@ export default function Header({
                 <li>
                   <Link
                     href="/student/apply"
-                    className="text-gray-600 hover:text-blue-600 transition-colors block"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Apply
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/student/payments"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Payments
                   </Link>
                 </li>
               </>

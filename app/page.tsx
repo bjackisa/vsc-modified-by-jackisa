@@ -22,7 +22,7 @@ export default function Home() {
                 Apply Now
               </Link>
               <Link
-                href="//student/dashboard"
+                href="/student/dashboard"
                 className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-medium text-center transition-colors border border-white"
               >
                 Check Status

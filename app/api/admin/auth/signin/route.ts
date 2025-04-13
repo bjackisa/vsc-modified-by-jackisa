@@ -64,7 +64,7 @@ export async function POST(request: Request) {
     }
 
     // Set session cookie with user info
-    const cookieStore = cookies();
+    const cookieStore = await cookies();
     cookieStore.set({
       name: 'admin-session',
       value: user.id,

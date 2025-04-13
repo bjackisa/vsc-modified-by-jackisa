@@ -29,6 +29,9 @@ const publicRoutes = createRouteMatcher([
   '/api/update-admin-id(.*)',
   '/api/admin-auth(.*)',
   '/api/admin-logout(.*)',
+  '/api/payments(.*)',
+  '/api/payments/receipts(.*)',
+
 ]);
 
 // Simplified middleware for deployment
@@ -49,3 +52,4 @@ export const config = {
     '/(api|trpc)(.*)',
   ],
 };
+
