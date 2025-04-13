@@ -8,6 +8,7 @@ import UpdateStatusForm from '../../applications/update-status-form';
 import PrintButton from '../../applications/print-button';
 import ExportButton from '../../applications/export-button';
 import DocumentDownload from '../../applications/document-download';
+import PaymentManager from '@/components/admin/PaymentManager';
 
 export default async function ApplicationDetailPage({
   params,
@@ -274,27 +275,34 @@ export default async function ApplicationDetailPage({
             </div>
           </div>
 
-          <div>
-            <h2 className="text-lg font-semibold mb-3">Documents</h2>
-            {applicationDocuments.length > 0 ? (
-              <div className="bg-gray-50 p-4 rounded-md">
-                <ul className="divide-y divide-gray-200">
-                  {applicationDocuments.map((doc) => (
-                    <DocumentDownload
-                      key={doc.id}
-                      documentId={doc.id}
-                      blobUrl={doc.blob_url}
-                      name={doc.name}
-                      mimeType={doc.mime_type}
-                    />
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div className="bg-gray-50 p-4 rounded-md">
-                <p className="text-gray-500">No documents uploaded</p>
-              </div>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-3">Documents</h2>
+              {applicationDocuments.length > 0 ? (
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <ul className="divide-y divide-gray-200">
+                    {applicationDocuments.map((doc) => (
+                      <DocumentDownload
+                        key={doc.id}
+                        documentId={doc.id}
+                        blobUrl={doc.blob_url}
+                        name={doc.name}
+                        mimeType={doc.mime_type}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <p className="text-gray-500">No documents uploaded</p>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h2 className="text-lg font-semibold mb-3">Payment Management</h2>
+              <PaymentManager applicationId={application.id} />
+            </div>
           </div>
         </div>
       </div>

@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { auth } from '@clerk/nextjs/server';
 import DocumentDownload from '@/app/admin/applications/document-download';
 import DateDisplay from '@/app/admin/applications/date-display';
+import PaymentStatus from '@/components/student/PaymentStatus';
 
 export default async function StudentApplicationDetailPage({
   params,
@@ -14,7 +15,7 @@ export default async function StudentApplicationDetailPage({
 }) {
   // Ensure user is authenticated
   const { userId } = await auth();
-  
+
   if (!userId) {
     redirect('/sign-in');
   }
@@ -56,15 +57,17 @@ export default async function StudentApplicationDetailPage({
         </Link>
       </div>
 
-      <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
-        <div className="p-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        <div className="md:col-span-2">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="p-6">
           <div className="flex justify-between items-start mb-6">
             <h1 className="text-2xl font-bold">
               Application #{application.id.slice(0, 8)}
             </h1>
             <span className={`px-3 py-1 rounded-full text-sm font-semibold ${
-              application.status === 'approved' ? 'bg-green-100 text-green-800' : 
-              application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
+              application.status === 'approved' ? 'bg-green-100 text-green-800' :
+              application.status === 'rejected' ? 'bg-red-100 text-red-800' :
               'bg-yellow-100 text-yellow-800'
             }`}>
               {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
@@ -78,8 +81,8 @@ export default async function StudentApplicationDetailPage({
                 <p className="mb-2">
                   <span className="font-medium">Status:</span>{' '}
                   <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                    application.status === 'approved' ? 'bg-green-100 text-green-800' : 
-                    application.status === 'rejected' ? 'bg-red-100 text-red-800' : 
+                    application.status === 'approved' ? 'bg-green-100 text-green-800' :
+                    application.status === 'rejected' ? 'bg-red-100 text-red-800' :
                     'bg-yellow-100 text-yellow-800'
                   }`}>
                     {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
@@ -258,28 +261,38 @@ export default async function StudentApplicationDetailPage({
             </div>
           </div>
 
-          <div>
-            <h2 className="text-lg font-semibold mb-3">Documents</h2>
-            {applicationDocuments.length > 0 ? (
-              <div className="bg-gray-50 p-4 rounded-md">
-                <ul className="divide-y divide-gray-200">
-                  {applicationDocuments.map((doc) => (
-                    <DocumentDownload
-                      key={doc.id}
-                      documentId={doc.id}
-                      blobUrl={doc.blob_url}
-                      name={doc.name}
-                      mimeType={doc.mime_type}
-                    />
-                  ))}
-                </ul>
-              </div>
-            ) : (
-              <div className="bg-gray-50 p-4 rounded-md">
-                <p className="text-gray-500">No documents uploaded</p>
-              </div>
-            )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <h2 className="text-lg font-semibold mb-3">Documents</h2>
+              {applicationDocuments.length > 0 ? (
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <ul className="divide-y divide-gray-200">
+                    {applicationDocuments.map((doc) => (
+                      <DocumentDownload
+                        key={doc.id}
+                        documentId={doc.id}
+                        blobUrl={doc.blob_url}
+                        name={doc.name}
+                        mimeType={doc.mime_type}
+                      />
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className="bg-gray-50 p-4 rounded-md">
+                  <p className="text-gray-500">No documents uploaded</p>
+                </div>
+              )}
+            </div>
+
+
           </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="md:col-span-1">
+          <PaymentStatus applicationId={id} />
         </div>
       </div>
 
@@ -290,7 +303,7 @@ export default async function StudentApplicationDetailPage({
         >
           Back to Dashboard
         </Link>
-        
+
         {application.status === 'pending' && (
           <Link
             href={`/student/apply/edit/${application.id}`}

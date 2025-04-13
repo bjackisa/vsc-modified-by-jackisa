@@ -61,8 +61,19 @@ export async function POST(request: Request) {
     const existingUser = await db
       .select()
       .from(users)
-      .where(eq(users.id, userId))
+      .where(eq(users.email, validatedData.data.email))
       .limit(1);
+
+    // If user exists with different ID, return error
+    if (existingUser.length > 0 && existingUser[0].id !== userId) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Email already registered with a different account',
+          details: 'Please use a different email or log in with the existing account'
+        }), 
+        { status: 409 }
+      );
+    }
 
     // If user doesn't exist, create them
     if (existingUser.length === 0) {
@@ -73,6 +84,23 @@ export async function POST(request: Request) {
         role: 'student',
         created_at: new Date(),
       });
+    }
+
+    // Check for existing application
+    const existingApplication = await db
+      .select()
+      .from(applications)
+      .where(eq(applications.user_id, userId))
+      .limit(1);
+
+    if (existingApplication.length > 0) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Application already exists',
+          details: 'You have already submitted an application'
+        }), 
+        { status: 409 }
+      );
     }
 
     const application = await db.insert(applications).values({
@@ -86,7 +114,22 @@ export async function POST(request: Request) {
     return NextResponse.json(application[0]);
   } catch (error) {
     console.error('[APPLICATIONS_POST]', error);
-    return new NextResponse('Internal Error', { status: 500 });
+    if (error instanceof Error) {
+      return new NextResponse(
+        JSON.stringify({ 
+          error: 'Failed to submit application',
+          details: error.message 
+        }), 
+        { status: 500 }
+      );
+    }
+    return new NextResponse(
+      JSON.stringify({ 
+        error: 'Failed to submit application',
+        details: 'An unexpected error occurred' 
+      }), 
+      { status: 500 }
+    );
   }
 }
 

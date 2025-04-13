@@ -76,6 +76,14 @@ export default function Header({
                       Applications
                     </Link>
                   </li>
+                  <li>
+                    <Link
+                      href="/admin/payments"
+                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                    >
+                      Payments
+                    </Link>
+                  </li>
                   {role === 'super_admin' && (
                     <li>
                       <Link
@@ -105,6 +113,14 @@ export default function Header({
                       className="text-gray-600 hover:text-blue-600 transition-colors"
                     >
                       Apply
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/student/payments"
+                      className="text-gray-600 hover:text-blue-600 transition-colors"
+                    >
+                      Payments
                     </Link>
                   </li>
                 </>
@@ -220,6 +236,15 @@ export default function Header({
                     Applications
                   </Link>
                 </li>
+                <li>
+                  <Link
+                    href="/admin/payments"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Payments
+                  </Link>
+                </li>
                 {role === 'super_admin' && (
                   <li>
                     <Link
@@ -252,6 +277,15 @@ export default function Header({
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Apply
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/student/payments"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Payments
                   </Link>
                 </li>
               </>
