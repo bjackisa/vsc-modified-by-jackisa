@@ -51,6 +51,14 @@ export default function Header({
               </li>
               <li>
                 <Link
+                  href="/scholarships"
+                  className="text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  Scholarships
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/admin-auth"
                   className="text-gray-600 hover:text-blue-600 transition-colors"
                 >
@@ -277,6 +285,15 @@ export default function Header({
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     Apply
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="/student/scholarships"
+                    className="text-gray-600 hover:text-blue-600 transition-colors block py-2"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                  >
+                    Scholarships
                   </Link>
                 </li>
                 <li>
